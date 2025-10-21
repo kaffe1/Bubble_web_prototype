@@ -30,6 +30,7 @@ let arrivalAudioArrayBuffers = []; // Array for the 4 preloaded arrival sound fi
 // --- MODIFICATION END ---
 let decodedSpatialAudioBuffers = []; // This will be example1, 2, 3
 let spatialAudioArrayBuffers = [];
+let popSound;
 
 // Recording variables
 let mediaRecorder;
@@ -78,6 +79,7 @@ async function preload() {
   emojiShadow = loadImage("./assets/shadow.png");
   startBtn = loadImage("./assets/start-btn.png");
   // --- MODIFICATION START: Fetch four different arrival sounds for the nodes ---
+  popSound = loadSound("./assets/pop.mp3");
   try {
     const arrivalPaths = [
       "./assets/arrival1.mp3",
@@ -180,8 +182,14 @@ function setup() {
   }
 
   if (ring) {
-    ring.mousePressed(toggleRecording);
-    ring.mouseReleased(toggleRecording);
+    ring.mousePressed((event) => {
+      event.stopPropagation();
+      toggleRecording();
+    });
+    ring.mouseReleased((event) => {
+      event.stopPropagation();
+      toggleRecording();
+    });
   }
 
   // Create and set up turn buttons
@@ -207,16 +215,47 @@ function setup() {
   leftTurnButton.position(40, height - 80);
   rightTurnButton.position(120, height - 80);
 
-  leftTurnButton.mousePressed(() => (isRotatingLeft = true));
-  leftTurnButton.mouseReleased(() => (isRotatingLeft = false));
-  rightTurnButton.mousePressed(() => (isRotatingRight = true));
-  rightTurnButton.mouseReleased(() => (isRotatingRight = false));
+  leftTurnButton.mousePressed((event) => {
+    event.stopPropagation();
+    isRotatingLeft = true;
+  });
+
+  leftTurnButton.mouseReleased((event) => {
+    event.stopPropagation();
+    isRotatingLeft = false;
+  });
+
+  rightTurnButton.mousePressed((event) => {
+    event.stopPropagation();
+    isRotatingRight = true;
+  });
+
+  rightTurnButton.mouseReleased((event) => {
+    event.stopPropagation();
+    isRotatingRight = false;
+  });
 
   instructions.html("Click Start to begin your exploration.");
 }
 
 function draw() {
-  background(bgImg);
+  let imgRatio = bgImg.width / bgImg.height;
+  let canvasRatio = width / height;
+
+  let newWidth, newHeight;
+
+  if (canvasRatio < imgRatio) {
+    newHeight = height;
+    newWidth = imgRatio * newHeight;
+  } else {
+    newWidth = width;
+    newHeight = newWidth / imgRatio;
+  }
+  let x = (width - newWidth) / 2;
+  let y = (height - newHeight) / 2;
+
+  image(bgImg, x, y, newWidth, newHeight);
+  // background(bgImg);
 
   // Draw all nodes
   for (let node of nodes) {
@@ -230,8 +269,10 @@ function draw() {
   }
 
   // Player movement and rotation is always active
-  playerPos.x = constrain(mouseX, 20, width - 20);
-  playerPos.y = constrain(mouseY, 20, height - 20);
+  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+    playerPos.x = constrain(mouseX, 20, width - 20);
+    playerPos.y = constrain(mouseY, 20, height - 20);
+  }
   if (isRotatingLeft) playerAngle -= rotationSpeed;
   if (isRotatingRight) playerAngle += rotationSpeed;
   noCursor();
@@ -557,11 +598,18 @@ function checkForArrival(targetNode) {
   if (d < targetNode.radius) {
     targetNode.visited = true;
     if (targetNode.isUserNode) {
-      playRecordedSound(targetNode.recordedAudioBuffer);
+      popSound.play();
+      setTimeout(() => {
+        playRecordedSound(targetNode.recordedAudioBuffer);
+      }, 800);
       addEmojiToCompass(targetNode.nodeEmoji);
     } else {
       // --- MODIFICATION START: Play the specific arrival sound for the visited node ---
-      playArrivalSound(targetNode.arrivalAudioBuffer);
+      //add popsound
+      popSound.play();
+      setTimeout(() => {
+        playArrivalSound(targetNode.arrivalAudioBuffer);
+      }, 800);
       // --- MODIFICATION END ---
       addEmojiToCompass(targetNode.nodeEmoji);
       console.log(targetNode);
