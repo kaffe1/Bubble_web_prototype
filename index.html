@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>interactive prototype</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+  </head>
+  <body>
+    <div class="main-container">
+      <!-- left -->
+      <div id="canvas-container">
+        <!-- <img src="assets/map.png" alt="" /> -->
+        <!-- <div id="canvas-container1"></div> -->
+        <div id="instructions">Please click to select your next Node</div>
+      </div>
+
+      <!-- right-->
+      <div id="info-panel">
+        <div id="bubble-container">
+          <div id="arrow-container0">
+            <img id="arrow0" src="assets/compass0.png" />
+          </div>
+          <div id="arrow-container">
+            <img id="arrow" src="assets/compass.png" />
+          </div>
+          <div id="arrow-container-ring">
+            <img id="ring" src="assets/bubble-ring.png" />
+          </div>
+          <span id="bubble-emoji"></span>
+        </div>
+        <p id="distance">-- m</p>
+        <button id="leave-message" class="action-button">
+          Leave a Message
+        </button>
+      </div>
+    </div>
+
+    <script src="./script10.js"></script>
+  </body>
+</html>
